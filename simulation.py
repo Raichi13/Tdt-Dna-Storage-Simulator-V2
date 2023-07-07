@@ -13,6 +13,7 @@ from functools import partial
 import json
 import os
 import sys
+import argparse
 
 def sum_of_elements(nested_list):
     if isinstance(nested_list, list):
@@ -76,9 +77,9 @@ def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,a
 
     return error_bytes_avg, error_bytes_min, error_bytes_max, total_bytes, total_bases_before_synthesis_sum, total_bases_after_synthesis_avg, total_bases_after_synthesis_min, total_bases_after_synthesis_max
 
-def simtest():
+def simtest(args):
     #miss,del,over
-    input_csv = 'sim4.csv'
+    input_csv = args.param
     out_path = os.path.splitext(input_csv)[0] + '_result.json'
 
     params_df = pd.read_csv(input_csv)
@@ -113,6 +114,10 @@ def simtest():
     with open(out_path, 'w') as f:
         json.dump(simulations, f)    
         
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='TdT sim')
+    parser.add_argument('-p', '--param', help='input param csv', required=True)
+    args = parser.parse_args()
+    simtest(args)
 
-simtest()
 # print(simulate_single('h','1k_data',16,4,1,0.0,0.0,0.0,50,3))
