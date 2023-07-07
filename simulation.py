@@ -78,7 +78,7 @@ def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,a
 
 def simtest():
     #miss,del,over
-    input_csv = 'sim3.csv'
+    input_csv = 'sim4.csv'
     out_path = os.path.splitext(input_csv)[0] + '_result.json'
 
     params_df = pd.read_csv(input_csv)

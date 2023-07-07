@@ -1,7 +1,7 @@
 import os
 import csv
 
-header = ['sim_times','ecc_algorithm','file_name,bytes_per_oligo','address_size','ecc_param','miss_extension_prob','deletion_prob','over_extension_prob','molcule_num,reaction_cycle']
+header = ['sim_times','ecc_algorithm','file_name','bytes_per_oligo','address_size','ecc_param','miss_extension_prob','deletion_prob','over_extension_prob','molcule_num','reaction_cycle']
 
 params = []
 for i in range(10):
