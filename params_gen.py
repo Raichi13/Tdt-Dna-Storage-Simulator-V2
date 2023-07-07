@@ -6,7 +6,7 @@ header = ['sim_times','ecc_algorithm','file_name','bytes_per_oligo','address_siz
 params = []
 for i in range(10):
     for j in range(50):
-        params.append([100,'r','1k_data',32,4,i + 1,0.001,0.0,0.0,j + 1,3])
+        params.append([1000,'r','1k_data',32,4,i + 1,0.001,0.0,0.0,j + 1,3])
 
 with open('sim7.csv', 'w') as f:
     writer = csv.writer(f)
