@@ -12,6 +12,7 @@ import multiprocessing as mp
 from functools import partial
 import json
 import os
+import sys
 
 def sum_of_elements(nested_list):
     if isinstance(nested_list, list):
@@ -77,7 +78,7 @@ def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,a
 
 def simtest():
     #miss,del,over
-    input_csv = 'sim2.csv'
+    input_csv = sys.argv[0]
     out_path = os.path.splitext(input_csv)[0] + '_result.json'
 
     params_df = pd.read_csv(input_csv)
