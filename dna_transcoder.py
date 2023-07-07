@@ -74,7 +74,7 @@ class DNATranscoder:
           last_base = b
       return removed
     
-    def decode_with_build_consensus_base(self,bases_list:List,trim_margin:int = 0):
+    def decode_with_consensus_base(self,bases_list:List,trim_margin:int = 0):
         decoded_datas = []
         for bases_item in bases_list:
             repeat_removed_bases = []

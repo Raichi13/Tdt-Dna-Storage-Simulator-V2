@@ -42,7 +42,7 @@ def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_
     tdt = TdT(target_bases,reaction_cycle,molcule_num,miss_extension_prob,deletion_prob,over_extension_prob)
     ext_simlated_data = tdt.synthesis()
 
-    decoded_data_from_dna = dna_transcoder.decode_with_build_consensus_base(ext_simlated_data)
+    decoded_data_from_dna = dna_transcoder.decode_with_consensus_base(ext_simlated_data)
     decoded_data = decoder.decode(decoded_data_from_dna)
 
     error_counter = ErrorCounter(encoder.ref,decoder.for_error_check)

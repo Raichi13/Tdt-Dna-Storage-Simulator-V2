@@ -1,3 +1,4 @@
 sim_result_del_hamming.json
 venv/
 __pycache__/
+output/
