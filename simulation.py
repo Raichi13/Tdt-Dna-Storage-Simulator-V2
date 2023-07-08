@@ -123,6 +123,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='TdT sim')
     parser.add_argument('-p', '--param', help='input param csv', required=True)
     args = parser.parse_args()
+    print(args)
     simtest(args)
 
 # print(simulate_single('h','1k_data',16,4,1,0.0,0.0,0.0,50,3))
