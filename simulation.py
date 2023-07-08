@@ -8,6 +8,8 @@ from hamming_decoder import HammingDecoder
 from error_counter import ErrorCounter
 from rs_encoder import RSEncoder
 from rs_decoder import RSDecoder
+from default_encoder import DefaultEncoder
+from default_decoder import DefaultDecoder
 import multiprocessing as mp
 from functools import partial
 import json
@@ -23,7 +25,7 @@ def sum_of_elements(nested_list):
 
 
 def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_size:int,ecc_param:any,miss_extension_prob:int,deletion_prob:int,over_extension_prob:int,molcule_num:int,reaction_cycle:int,dummy=None):
-    if not ecc_algorithm in ['h','r']:
+    if not ecc_algorithm in ['h','r','d']:
         raise ValueError()
     encoder = None
     decoder = None
@@ -33,6 +35,9 @@ def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_
     elif ecc_algorithm == 'r':
         encoder = RSEncoder(file_name,bytes_per_oligo,address_size,ecc_param)
         decoder = RSDecoder(bytes_per_oligo,address_size,ecc_param)
+    elif ecc_algorithm == 'd':
+        encoder = DefaultEncoder(file_name,bytes_per_oligo,address_size,0)
+        decoder = DefaultDecoder(bytes_per_oligo,address_size)
 
     encoded_data = encoder.encode()
 
