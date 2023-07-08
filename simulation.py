@@ -36,7 +36,7 @@ def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_
         encoder = RSEncoder(file_name,bytes_per_oligo,address_size,ecc_param)
         decoder = RSDecoder(bytes_per_oligo,address_size,ecc_param)
     elif ecc_algorithm == 'd':
-        encoder = DefaultEncoder(file_name,bytes_per_oligo,address_size,0)
+        encoder = DefaultEncoder(file_name,bytes_per_oligo,address_size,ecc_param)
         decoder = DefaultDecoder(bytes_per_oligo,address_size)
 
     encoded_data = encoder.encode()
