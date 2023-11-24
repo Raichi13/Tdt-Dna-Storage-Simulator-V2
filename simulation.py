@@ -16,6 +16,7 @@ import json
 import os
 import sys
 import argparse
+import time
 
 def sum_of_elements(nested_list):
     if isinstance(nested_list, list):
@@ -96,7 +97,10 @@ def simtest(args):
     i = 1
     for p in params:
         print('Simulation {} of {} start'.format(i,len(params)))
+        start_time = time.time()
         res = simulate(*p)
+        end_time = time.time()
+        simulation_duration = end_time - start_time
         print(res)
         simulation_result = {
             'index': i-1,
@@ -112,7 +116,7 @@ def simtest(args):
             }
         }
         simulations.append(simulation_result)
-        print('Simulation {} of {} done'.format(i,len(params)))
+        print('Simulation {} of {} done in {:.2f} seconds'.format(i, len(params), simulation_duration))
         i += 1
         
 

@@ -4,3 +4,5 @@ __pycache__/
 output/
 profile.svg
 clac.py
+test.csv
+test_result.json

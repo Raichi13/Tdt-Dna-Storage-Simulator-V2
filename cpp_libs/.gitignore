@@ -1,0 +1,41 @@
+Build/
+# CMake generated files
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
+*.make
+
+# Build directory
+Build/
+
+# Editor files
+*.swp
+*.swo
+
+# Compiled Object files
+*.o
+*.lo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.a
+*.la
+
+# Executables
+*.out
+*.app
+
+# Various temporary or log files
+*.log
+*.tmp
+*~
+
+# Ignore any .env files
+.env
