@@ -1,7 +1,7 @@
-import random
+import ctypes
 
 class TdT:
-    def __init__(self,target_bases,reaction_cycle,molecule_number,miss_extension_probability,deletion_probability,over_extension_probability):
+    def __init__(self, target_bases, reaction_cycle, molecule_number, miss_extension_probability, deletion_probability, over_extension_probability, bases_list=None):
         self.target_bases = target_bases
         self.reaction_cycle = reaction_cycle
         self.molecule_number = molecule_number
@@ -12,64 +12,42 @@ class TdT:
         self.deletion_count = 0
         self.over_extension_count = 0
         self.synthesis_products = []
-
-
-    # 重み付けされた排反な2つの事象の抽選関数(高速化のために2つの事象に限定して実装(listで渡すと遅い))
-    def weighted_random_exclusive(self,probability0:int,probability1:int):
-        r = random.random()
-        if r < probability0 :
-            return 0
-        elif r < probability0 + probability1 :
-            return 1
+        if bases_list is None:
+            self.bases_list = ['A','G','C','T']
         else:
-            return -1
-    
-    # 重み付けされた抽選関数
-    def weighted_random(self,probability:int):
-        return (random.random() < probability)
-        
-    def extension(self,base):
-        bases_list = ['A','G','C','T']
-        r = []
-        for i in range(self.reaction_cycle):
-            ext_base = base
-            if self.weighted_random(self.miss_extension_probability):# 塩基ミス
-                other_bases = [s for s in bases_list if base not in s]
-                ext_base = other_bases[random.randint(0,2)]
-                self.miss_extension_count += 1
-            # 伸長失敗と過剰に伸長
-            deletion_or_over = self.weighted_random_exclusive(self.over_extension_probability,self.deletion_probability)
-            if deletion_or_over == -1 :# 正常に伸長
-                r.append(ext_base)      
-                continue
-            if deletion_or_over == 0 : #過剰に伸長
-                r.append(ext_base)
-                r.append(ext_base)
-                self.over_extension_count += 1
-                continue
-            if deletion_or_over == 1 : #欠損
-                self.deletion_count += 1
-                continue
-        return r       
+            self.bases_list = bases_list
+        self.lib = ctypes.CDLL('./cpp_libs/Build/libtdt.so')
 
+        # C++関数の引数と戻り値の型を設定
+        self.lib.extension.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_int, ctypes.c_char_p]
+        self.lib.extension.restype = ctypes.c_int
+        self.lib.synthesis.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+        self.lib.synthesis.restype = ctypes.c_int
+        self.lib.free_memory.argtypes = [ctypes.c_int]
+        self.lib.free_memory.restype = None
+        self.lib.get_data_pointer.argtypes = [ctypes.c_int]
+        self.lib.get_data_pointer.restype = ctypes.c_void_p
 
-    def __synthesis(self,target_base):
-        synthesis_product = []
-        for base in target_base:
-            synthesis_product = synthesis_product + self.extension(base)
-        return synthesis_product
-    
+    def _get_data_from_id(self, data_id):
+        ptr = self.lib.get_data_pointer(data_id)
+        if ptr:
+            result = ctypes.cast(ptr, ctypes.c_char_p).value.decode('utf-8')
+            return result
+        return ""
+
+    def __synthesis(self, target_base):
+        bases_list_str = ''.join(self.bases_list)
+        syn_id = self.lib.synthesis(target_base.encode('utf-8'), 
+                                    self.miss_extension_probability, 
+                                    self.reaction_cycle, 
+                                    bases_list_str.encode('utf-8'), 
+                                    self.molecule_number)
+        result = self._get_data_from_id(syn_id)
+        self.lib.free_memory(syn_id)
+        return [seq for seq in result.split(';') if seq]
+
     def synthesis(self):
         self.synthesis_products = []
         for tb in self.target_bases:
-            products = []
-            for i in range(self.molecule_number):
-                products.append(self.__synthesis(tb))
-            self.synthesis_products.append(products)
+            self.synthesis_products.append(self.__synthesis(tb))
         return self.synthesis_products
-
-
-
-# tb = ['A','G','C','T']
-# tdt = TdT(tb,3,0,0.2,0)
-# print(tdt.synthesis())
