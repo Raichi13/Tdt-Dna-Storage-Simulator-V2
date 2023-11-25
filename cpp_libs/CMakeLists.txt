@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(TdTDnaStorageSimulator)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 add_library(DnaTranscoder SHARED DnaTranscoder.cpp)
 add_library(TdT SHARED TdT.cpp)
