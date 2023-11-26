@@ -92,7 +92,10 @@ def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,a
 def run(args):
     #miss,del,over
     input_csv = args.param
-    out_path = os.path.splitext(input_csv)[0] + '_result.json'
+    base_name = os.path.basename(input_csv)
+    file_name, _ = os.path.splitext(base_name)
+    out_path = f'./results/2023f/{file_name}_result.json'
+    # out_path = './results/2023f/' + os.path.splitext(input_csv)[0] + '_result.json'
 
     params_df = pd.read_csv(input_csv)
     params = [tuple(row) for row in params_df.values]
