@@ -2,15 +2,11 @@ import numpy as np
 from typing import Union,List
 import pandas as pd
 import ctypes
+from transcoder_base import TranscoderBase
 
-
-class DNATranscoder:
+class DNATranscoder(TranscoderBase):
     def __init__(self, origin_base: str = "A") -> None:
-        self.origin_base = origin_base
-        self.lib = ctypes.CDLL('./cpp_libs/Build/libDnaTranscoder.so')
-        self.lib.getConsensusSequence.restype = ctypes.c_void_p
-        self.lib.getConsensusSequence.argtypes = [ctypes.POINTER(ctypes.c_char_p), ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
-        self.lib.free_consensus_sequence.argtypes = [ctypes.c_void_p]
+        super().__init__(origin_base)
 
     def __to_trit_bytes_flatten(self,ns=Union[np.uint8, int]) -> np.array:
         trits = []
@@ -62,42 +58,7 @@ class DNATranscoder:
             if bases[i + 1] == b:
                 continue
             trits.append(mapper[b][bases[i + 1]])
-        return np.array(trits, dtype=np.uint8)
-    
-    def __build_consensus_base(self,bases:List,trim_margin:int = 0):
-      avg = np.round(np.average(list(map(lambda x:len(x),bases))))
-      df = pd.DataFrame(bases)
-      mode = df.mode().iloc[0].tolist()
-      return list(mode[:int(avg+trim_margin):]),avg
-    
-    def __remove_dna_repeat(self,bases:List):
-      last_base = ''
-      removed = []
-      for b in bases:
-          if last_base != b:
-              removed.append(b)
-          last_base = b
-      return removed
-    
-    def decode_with_consensus_base(self,bases_list:List,trim_margin:int = 0):
-        decoded_datas = []
-        for bases_item in bases_list:
-            sequences_c = [bytes(''.join(self.__remove_dna_repeat(bases)), 'utf-8') for bases in bases_item]
-            sequences_ptrs = (ctypes.c_char_p * len(sequences_c))(*sequences_c)
-            sequence_lengths = (ctypes.c_int * len(sequences_c))(*[len(seq) for seq in sequences_c])
-
-            result_ptr = self.lib.getConsensusSequence(sequences_ptrs, len(sequences_c), sequence_lengths)
-            result = ctypes.cast(result_ptr, ctypes.c_char_p).value
-            consensus_base = result.decode('utf-8')
-            self.lib.free_consensus_sequence(result_ptr)
-            decoded_datas.append(self.decode(list(consensus_base)))
-        return decoded_datas
-    
-    def encode_many(self,datas:List):
-        encoded_datas = []
-        for data in datas:
-            encoded_datas.append(self.encode(data))
-        return encoded_datas
+        return np.array(trits, dtype=np.uint8)                        
 
     def encode(self, data: Union[np.uint8, int]):
         trits = self.__to_trit_bytes_flatten(data)
