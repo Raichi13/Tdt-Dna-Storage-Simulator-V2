@@ -2,6 +2,7 @@ from tdt import TdT
 import numpy as np
 from typing import Union,List
 from dna_transcoder import DNATranscoder
+from binary_dna_transcoder import BinaryDNATranscoder
 from hamming_encoder import HammingEncoder
 import pandas as pd
 from hamming_decoder import HammingDecoder
@@ -25,7 +26,7 @@ def sum_of_elements(nested_list):
         return 1
 
 
-def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_size:int,ecc_param:any,miss_extension_prob:int,deletion_prob:int,over_extension_prob:int,molcule_num:int,reaction_cycle:int,dummy=None):
+def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_size:int,ecc_param:any,miss_extension_prob:int,deletion_prob:int,over_extension_prob:int,molcule_num:int,reaction_cycle:int,base_num:int,dummy=None):
     if not ecc_algorithm in ['h','r','d']:
         raise ValueError()
     encoder = None
@@ -42,12 +43,17 @@ def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_
 
     encoded_data = encoder.encode()
 
-    dna_transcoder = DNATranscoder()
-    target_bases = dna_transcoder.encode_many(encoded_data)
-
-    tdt = TdT(target_bases,reaction_cycle,molcule_num,miss_extension_prob,deletion_prob,over_extension_prob)
+    if not base_num in [3,4]:
+        raise ValueError()
+    if base_num == 3:
+        dna_transcoder = BinaryDNATranscoder()
+        target_bases = dna_transcoder.encode_many(encoded_data)
+        tdt = TdT(target_bases,reaction_cycle,molcule_num,miss_extension_prob,deletion_prob,over_extension_prob,['A','G','C'])
+    elif base_num == 4:
+        dna_transcoder = DNATranscoder()
+        target_bases = dna_transcoder.encode_many(encoded_data)
+        tdt = TdT(target_bases,reaction_cycle,molcule_num,miss_extension_prob,deletion_prob,over_extension_prob)    
     ext_simlated_data = tdt.synthesis()
-
     decoded_data_from_dna = dna_transcoder.decode_with_consensus_base(ext_simlated_data)
     decoded_data = decoder.decode(decoded_data_from_dna)
 
@@ -60,8 +66,8 @@ def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_
     return error_bytes,total_bytes,total_bases_before_synthesis,total_bases_after_synthesis
 
 
-def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_size:int,ecc_param:any,miss_extension_prob:int,deletion_prob:int,over_extension_prob:int,molcule_num:int,reaction_cycle:int):
-    simulate_single_partial = partial(simulate_single,ecc_algorithm, file_name, bytes_per_oligo, address_size, ecc_param, miss_extension_prob, deletion_prob, over_extension_prob, molcule_num, reaction_cycle)
+def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_size:int,ecc_param:any,miss_extension_prob:int,deletion_prob:int,over_extension_prob:int,molcule_num:int,reaction_cycle:int,base_num:int):
+    simulate_single_partial = partial(simulate_single,ecc_algorithm, file_name, bytes_per_oligo, address_size, ecc_param, miss_extension_prob, deletion_prob, over_extension_prob, molcule_num, reaction_cycle,base_num)
     with mp.Pool(mp.cpu_count()) as pool:
         results = np.array(pool.map(simulate_single_partial, [None]*sim_times))
     error_bytes = results[:, 0]
@@ -83,7 +89,7 @@ def simulate(sim_times:int,ecc_algorithm:str,file_name:str,bytes_per_oligo:int,a
 
     return error_bytes_avg, error_bytes_min, error_bytes_max, total_bytes, total_bases_before_synthesis_sum, total_bases_after_synthesis_avg, total_bases_after_synthesis_min, total_bases_after_synthesis_max
 
-def simtest(args):
+def run(args):
     #miss,del,over
     input_csv = args.param
     out_path = os.path.splitext(input_csv)[0] + '_result.json'
@@ -104,6 +110,20 @@ def simtest(args):
         print(res)
         simulation_result = {
             'index': i-1,
+            'parameters': {
+                'sim_times': p[0],
+                'ecc_algorithm': p[1],
+                'file_name': p[2],
+                'bytes_per_oligo': p[3],
+                'address_size': p[4],
+                'ecc_param': p[5],
+                'miss_extension_prob': p[6],
+                'deletion_prob': p[7],
+                'over_extension_prob': p[8],
+                'molcule_num': p[9],
+                'reaction_cycle': p[10],
+                'base_num': p[11]
+            },
             'results': {
                 'error_bytes_avg': int(res[0]),
                 'error_bytes_min': int(res[1]),
@@ -128,6 +148,6 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--param', help='input param csv', required=True)
     args = parser.parse_args()
     print(args)
-    simtest(args)
+    run(args)
 
 # print(simulate_single('h','1k_data',16,4,1,0.0,0.0,0.0,50,3))

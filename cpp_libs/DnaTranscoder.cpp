@@ -65,6 +65,7 @@ extern "C" {
         }
 
         std::vector<std::string> consensus = buildConsensusBase(dna_sequences);
+        consensus = removeDnaRepeat(consensus);
         std::string consensus_str;
         for (const auto& base : consensus) {
             consensus_str += base;

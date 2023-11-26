@@ -1,7 +1,7 @@
 import random
 
 class TdT:
-    def __init__(self,target_bases,reaction_cycle,molecule_number,miss_extension_probability,deletion_probability,over_extension_probability):
+    def __init__(self,target_bases,reaction_cycle,molecule_number,miss_extension_probability,deletion_probability,over_extension_probability,bases_list=None):
         self.target_bases = target_bases
         self.reaction_cycle = reaction_cycle
         self.molecule_number = molecule_number
@@ -12,6 +12,10 @@ class TdT:
         self.deletion_count = 0
         self.over_extension_count = 0
         self.synthesis_products = []
+        if bases_list is None:
+            self.bases_list = ['A','G','C','T']
+        else:
+            self.bases_list = bases_list
 
 
     # 重み付けされた排反な2つの事象の抽選関数(高速化のために2つの事象に限定して実装(listで渡すと遅い))
@@ -29,13 +33,12 @@ class TdT:
         return (random.random() < probability)
         
     def extension(self,base):
-        bases_list = ['A','G','C','T']
         r = []
         for i in range(self.reaction_cycle):
             ext_base = base
             if self.weighted_random(self.miss_extension_probability):# 塩基ミス
-                other_bases = [s for s in bases_list if base not in s]
-                ext_base = other_bases[random.randint(0,2)]
+                other_bases = [s for s in self.bases_list if base not in s]
+                ext_base = other_bases[random.randint(0,len(other_bases)-1)]
                 self.miss_extension_count += 1
             # 伸長失敗と過剰に伸長
             deletion_or_over = self.weighted_random_exclusive(self.over_extension_probability,self.deletion_probability)
