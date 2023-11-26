@@ -13,6 +13,7 @@ ecc_param_values_for_r = [1,5,10]
 molcule_num_values = [1,2,5,10,20,50]
 reaction_cycle_values = [1,2,5]
 base_num_values = [3, 4]
+file_name = '1k_data'
 
 with open('./params/2023f/sim1.csv', 'w', newline='') as file:
     writer = csv.writer(file)
@@ -22,6 +23,6 @@ with open('./params/2023f/sim1.csv', 'w', newline='') as file:
     ):
         if ecc_algo == 'r':
             for ecc_param in ecc_param_values_for_r:
-                writer.writerow([sim_time, ecc_algo, '', bytes_per_oligo, address_size, ecc_param, miss_ext_prob, del_prob, over_ext_prob, molcule_num, reaction_cycle, base_num])
+                writer.writerow([sim_time, ecc_algo, file_name, bytes_per_oligo, address_size, ecc_param, miss_ext_prob, del_prob, over_ext_prob, molcule_num, reaction_cycle, base_num])
         else:
-            writer.writerow([sim_time, ecc_algo, '', bytes_per_oligo, address_size, 1, miss_ext_prob, del_prob, over_ext_prob, molcule_num, reaction_cycle, base_num])
+            writer.writerow([sim_time, ecc_algo, file_name, bytes_per_oligo, address_size, 1, miss_ext_prob, del_prob, over_ext_prob, molcule_num, reaction_cycle, base_num])
