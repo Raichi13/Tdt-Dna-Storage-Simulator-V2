@@ -1,0 +1,13 @@
+miss_extension_prob_range = [0.001]
+deletion_prob_range = [0.01]
+over_extension_prob_range = [0.01]
+
+sim_times_values = [192]
+ecc_algorithm_values = ['h', 'r', 'd']
+bytes_per_oligo_values = [8,16,32]
+address_size_values = [4]
+ecc_param_values_for_r = [1,5,10]
+molcule_num_values = [1,2,5,10,20,50]
+reaction_cycle_values = [1,2,5]
+base_num_values = [3, 4]
+file_name = '1k_data'

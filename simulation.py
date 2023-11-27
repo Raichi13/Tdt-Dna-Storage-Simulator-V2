@@ -103,6 +103,8 @@ def run(args):
     # res = simulate(100,'h','1k_data',16,4,1,0.001,0.0,0.0,1,3)
     # print(res)
     simulations = []
+    total_simulations = len(params)
+    start_overall = time.time()
     i = 1
     for p in params:
         print('Simulation {} of {} start'.format(i,len(params)))
@@ -110,6 +112,8 @@ def run(args):
         res = simulate(*p)
         end_time = time.time()
         simulation_duration = end_time - start_time
+        elapsed_time = end_time - start_overall
+        remaining_time = (elapsed_time / i) * (total_simulations - i)
         print(res)
         simulation_result = {
             'index': i-1,
@@ -139,12 +143,14 @@ def run(args):
             }
         }
         simulations.append(simulation_result)
-        print('Simulation {} of {} done in {:.2f} seconds'.format(i, len(params), simulation_duration))
+        print('Simulation {} of {} done in {:.2f} seconds'.format(i, total_simulations, simulation_duration))
+        print('Estimated remaining time: {:.2f} seconds'.format(remaining_time))
         i += 1
         
 
     with open(out_path, 'w') as f:
-        json.dump(simulations, f)    
+        json.dump(simulations, f)
+    print('All simulations completed. Total time: {:.2f} seconds'.format(time.time() - start_overall))    
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='TdT sim')
