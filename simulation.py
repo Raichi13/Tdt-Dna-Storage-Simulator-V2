@@ -25,6 +25,12 @@ def sum_of_elements(nested_list):
     else:
         return 1
 
+def format_time(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return "{:02d}:{:02d}:{:02d}".format(int(hours), int(minutes), int(seconds))
+
 
 def simulate_single(ecc_algorithm:str,file_name:str,bytes_per_oligo:int,address_size:int,ecc_param:any,miss_extension_prob:int,deletion_prob:int,over_extension_prob:int,molcule_num:int,reaction_cycle:int,base_num:int,dummy=None):
     if not ecc_algorithm in ['h','r','d']:
@@ -114,6 +120,7 @@ def run(args):
         simulation_duration = end_time - start_time
         elapsed_time = end_time - start_overall
         remaining_time = (elapsed_time / i) * (total_simulations - i)
+        formatted_remaining_time = format_time(remaining_time)
         print(res)
         simulation_result = {
             'index': i-1,
@@ -144,7 +151,7 @@ def run(args):
         }
         simulations.append(simulation_result)
         print('Simulation {} of {} done in {:.2f} seconds'.format(i, total_simulations, simulation_duration))
-        print('Estimated remaining time: {:.2f} seconds'.format(remaining_time))
+        print('Estimated remaining time: {:.2f} seconds'.format(formatted_remaining_time))
         i += 1
         
 
