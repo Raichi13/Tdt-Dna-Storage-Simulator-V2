@@ -151,7 +151,7 @@ def run(args):
         }
         simulations.append(simulation_result)
         print('Simulation {} of {} done in {:.2f} seconds'.format(i, total_simulations, simulation_duration))
-        print('Estimated remaining time: {:.2f} seconds'.format(formatted_remaining_time))
+        print('Estimated remaining time: {}'.format(formatted_remaining_time))
         i += 1
         
 
